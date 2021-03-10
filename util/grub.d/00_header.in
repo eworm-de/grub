@@ -125,6 +125,14 @@ cat <<EOF
 
 EOF
 
+if [ x$GRUB_COLOR_NORMAL != x ] && [ x$GRUB_COLOR_HIGHLIGHT != x ] ; then
+    cat << EOF
+set menu_color_normal=$GRUB_COLOR_NORMAL
+set menu_color_highlight=$GRUB_COLOR_HIGHLIGHT
+
+EOF
+fi
+
 serial=0;
 gfxterm=0;
 for x in ${GRUB_TERMINAL_INPUT} ${GRUB_TERMINAL_OUTPUT}; do

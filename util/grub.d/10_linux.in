@@ -93,6 +93,10 @@ linux_entry ()
   fi
   if [ x$type != xsimple ] ; then
       case $type in
+	  booster)
+	      title="$(gettext_printf "%s, with Linux %s (booster initramfs)" "${os}" "${version}")" ;;
+	  fallback)
+	      title="$(gettext_printf "%s, with Linux %s (fallback initramfs)" "${os}" "${version}")" ;;
 	  recovery)
 	      title="$(gettext_printf "%s, with Linux %s (recovery mode)" "${os}" "${version}")" ;;
 	  *)
@@ -210,7 +214,7 @@ for linux in ${reverse_sorted_list}; do
   basename=`basename $linux`
   dirname=`dirname $linux`
   rel_dirname=`make_system_path_relative_to_its_root $dirname`
-  version=`echo $basename | sed -e "s,^[^0-9]*-,,g"`
+  version=`echo $basename | sed -e "s,vmlinuz-,,g"`
   alt_version=`echo $version | sed -e "s,\.old$,,g"`
   linux_root_device_thisversion="${LINUX_ROOT_DEVICE}"
 
@@ -299,6 +303,29 @@ for linux in ${reverse_sorted_list}; do
 
   linux_entry "${OS}" "${version}" advanced \
               "${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
+
+  if test -e "${dirname}/initramfs-${version}-fallback.img" ; then
+    initrd="${initrd_early} initramfs-${version}-fallback.img"
+
+    if test -n "${initrd}" ; then
+      gettext_printf "Found fallback initrd image(s) in %s:%s\n" "${dirname}" "${initrd_extra} ${initrd}" >&2
+    fi
+
+    linux_entry "${OS}" "${version}" fallback \
+                "${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
+  fi
+
+  if test -e "${dirname}/booster-${version}.img" ; then
+    initrd="${initrd_early} booster-${version}.img"
+
+    if test -n "${initrd}" ; then
+      gettext_printf "Found booster initrd image(s) in %s:%s\n" "${dirname}" "${initrd_extra} ${initrd}" >&2
+    fi
+
+    linux_entry "${OS}" "${version}" booster \
+                "${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT}"
+  fi
+
   if [ "x${GRUB_DISABLE_RECOVERY}" != "xtrue" ]; then
     linux_entry "${OS}" "${version}" recovery \
                 "${GRUB_CMDLINE_LINUX_RECOVERY} ${GRUB_CMDLINE_LINUX}"

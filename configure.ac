@@ -36,6 +36,32 @@ dnl description of the relationships between them.
 
 AC_INIT([GRUB],[2.15],[bug-grub@gnu.org])
 
+# 1: Initial value
+# 2: https://lists.gnu.org/archive/html/grub-devel/2022-06/msg00035.html
+# 3: https://lists.gnu.org/archive/html/grub-devel/2022-11/msg00059.html
+# 4: https://lists.gnu.org/archive/html/grub-devel/2023-10/msg00028.html
+# 5: https://lists.gnu.org/archive/html/grub-devel/2025-02/msg00024.html
+# 6: https://lists.gnu.org/archive/html/grub-devel/2025-11/msg00155.html
+GLOBAL_SBAT_LEVEL=6
+AC_SUBST([GLOBAL_SBAT_LEVEL])
+
+AC_ARG_WITH([sbat-file],
+  AS_HELP_STRING([--with-sbat-file=FILE],
+                 [append downstream SBAT CSV entries from FILE to the installed sbat.csv]),
+  [],
+  [with_sbat_file=])
+
+if test "x$with_sbat_file" = xyes; then
+  AC_MSG_ERROR([--with-sbat-file requires a file path])
+elif test "x$with_sbat_file" = xno || test "x$with_sbat_file" = x; then
+  VENDOR_SBAT_FILE=
+else
+  if test ! -r "$with_sbat_file"; then
+    AC_MSG_ERROR([cannot read vendor SBAT file: $with_sbat_file])
+  fi
+  VENDOR_SBAT_FILE="$with_sbat_file"
+fi
+
 AS_CASE(["$ERROR_PLATFORM_NOT_SUPPORT_SSP"],
   [n | no | nO | N | No | NO], [ERROR_PLATFORM_NOT_SUPPORT_SSP=no],
   [ERROR_PLATFORM_NOT_SUPPORT_SSP=yes])
@@ -2562,6 +2588,13 @@ fi
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([grub-core/Makefile])
+AC_CONFIG_FILES([grub-core/sbat.csv], [
+  if test -n "$VENDOR_SBAT_FILE"; then
+    cat "$VENDOR_SBAT_FILE" >> "$ac_file" || exit 1
+  fi
+], [
+  VENDOR_SBAT_FILE="$VENDOR_SBAT_FILE"
+])
 AC_CONFIG_FILES([grub-core/lib/gnulib/Makefile])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([docs/Makefile])

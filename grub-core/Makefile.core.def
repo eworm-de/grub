@@ -45,6 +45,13 @@ transform_data = {
   enable = powerpc_ieee1275;
 };
 
+data = {
+  common = sbat.csv;
+  installdir = platform;
+  enable = efi;
+  enable = powerpc_ieee1275;
+};
+
 kernel = {
   name = kernel;
 

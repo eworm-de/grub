@@ -25,6 +25,9 @@
 #if !defined (GRUB_MACHINE_EMU) && (defined(__mips__) || defined (__i386__) || defined (__x86_64__))
 #include <grub/cpu/io.h>
 #endif
+#if defined(__arm__) || defined(__aarch64__)
+#include <grub/pl011.h>
+#endif
 #include <grub/extcmd.h>
 #include <grub/i18n.h>
 #include <grub/list.h>
@@ -222,6 +225,44 @@ grub_serial_find (const char *name)
           return port;
     }
 #endif
+#endif
+
+#if defined(__arm__) || defined(__aarch64__)
+  if (grub_strncmp (name, "mmio,", sizeof ("mmio,") - 1) == 0
+      && grub_isxdigit (name [sizeof ("mmio,") - 1]))
+    {
+      const char *p1, *p = &name[sizeof ("mmio,") - 1];
+      grub_addr_t addr = grub_strtoul (p, &p1, 16);
+      unsigned int acc_size = 4;
+
+      /*
+       * If we reach here, we know there's a digit after "mmio,", so
+       * all we need to check is the validity of the character following
+       * the number, which should be a termination, or a dot followed by
+       * an access size.
+       */
+      if (p1[0] != '\0' && p1[0] != '.')
+        {
+          grub_error (GRUB_ERR_BAD_ARGUMENT, N_("incorrect MMIO address syntax"));
+          return NULL;
+        }
+      if (p1[0] == '.')
+        switch(p1[1])
+          {
+          case 'w':
+            acc_size = 2;
+            break;
+          case 'l':
+            acc_size = 4;
+            break;
+          default:
+            grub_error (GRUB_ERR_BAD_ARGUMENT, N_("incorrect MMIO access size"));
+          }
+
+      port = grub_serial_pl011_add_mmio (addr, acc_size, NULL);
+      if (port != NULL)
+        return port;
+    }
 #endif
 
 #ifdef GRUB_MACHINE_IEEE1275

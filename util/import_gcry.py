@@ -21,7 +21,6 @@ import re
 import sys
 import os
 import datetime
-import codecs
 
 def removesuffix(base: str, suffix: str) -> str:
     """ Backport of `removesuffix` from PEP-616 (Python 3.9+) """
@@ -96,9 +95,9 @@ mdblocksizes = {"_gcry_digest_spec_crc32" : 64,
 
 cipher_files = sorted (os.listdir (cipher_dir_in))
 
-with codecs.open (os.path.join (cipher_dir_out, "crypto.lst"), "w", "utf-8") as cryptolist, \
-     codecs.open (os.path.join ("grub-core", "Makefile.gcry.def"), "w", "utf-8") as conf, \
-     codecs.open ("Makefile.utilgcry.def", "w", "utf-8") as confutil:
+with open (os.path.join (cipher_dir_out, "crypto.lst"), "w", encoding="utf-8") as cryptolist, \
+     open (os.path.join ("grub-core", "Makefile.gcry.def"), "w", encoding="utf-8") as conf, \
+     open ("Makefile.utilgcry.def", "w", encoding="utf-8") as confutil:
 
     conf.write ("AutoGen definitions Makefile.tpl;\n\n")
     confutil.write ("AutoGen definitions Makefile.tpl;\n\n")
@@ -172,7 +171,7 @@ with codecs.open (os.path.join (cipher_dir_out, "crypto.lst"), "w", "utf-8") as 
         nch = False
         if re.match (r".*\.[ch]$", cipher_file):
             isc = re.match (r".*\.c$", cipher_file)
-            with codecs.open (infile, "r", "utf-8") as f, codecs.open (outfile, "w", "utf-8") as fw:
+            with open (infile, "r", encoding="utf-8") as f, open (outfile, "w", encoding="utf-8") as fw:
                 fw.write ("/* This file was automatically imported with \n")
                 fw.write ("   import_gcry.py. Please don't modify it */\n")
                 add_license = cipher_file == "pubkey-util.c" or (isc and not cipher_file in extra_files_list)
@@ -625,13 +624,13 @@ with codecs.open (os.path.join (cipher_dir_out, "crypto.lst"), "w", "utf-8") as 
         infile = os.path.join (indir, "src", src)
         if os.path.isdir (infile):
             continue
-        with codecs.open (outfile, "w", "utf-8") as fw:
+        with open (outfile, "w", encoding="utf-8") as fw:
             if src == "gcrypt-module.h":
                 continue
             if src == "visibility.h":
                 fw.write ("# include <grub/gcrypt/gcrypt.h>\n")
                 continue
-            with codecs.open (infile, "r", "utf-8") as f:
+            with open (infile, "r", encoding="utf-8") as f:
                 if src == "types.h":
                     fw.write (f.read ().replace ("float f;", "").replace ("double g;", "") \
                      .replace("#ifndef HAVE_BYTE",
@@ -661,7 +660,7 @@ with codecs.open (os.path.join (cipher_dir_out, "crypto.lst"), "w", "utf-8") as 
         outfile = os.path.join (basedir, "mpi", src)
         if os.path.isdir (infile):
             continue
-        with codecs.open (infile, "r", "utf-8") as f, codecs.open (outfile, "w", "utf-8") as fw:
+        with open (infile, "r", encoding="utf-8") as f, open (outfile, "w", encoding="utf-8") as fw:
             fw.write ("/* This file was automatically imported with \n")
             fw.write ("   import_gcry.py. Please don't modify it */\n")
             hold = False
@@ -694,31 +693,31 @@ with codecs.open (os.path.join (cipher_dir_out, "crypto.lst"), "w", "utf-8") as 
     chlog = "%s	* crypto.lst: New file.\n" % chlog
 
     outfile = os.path.join (cipher_dir_out, "types.h")
-    with codecs.open (outfile, "w", "utf-8") as fw:
+    with open (outfile, "w", encoding="utf-8") as fw:
         fw.write ("#include <grub/types.h>\n")
         fw.write ("#include <cipher_wrap.h>\n")
         chlog = "%s	* types.h: New file.\n" % chlog
 
     outfile = os.path.join (cipher_dir_out, "memory.h")
-    with codecs.open (outfile, "w", "utf-8") as fw:
+    with open (outfile, "w", encoding="utf-8") as fw:
         fw.write ("#include <cipher_wrap.h>\n")
         chlog = "%s	* memory.h: New file.\n" % chlog
 
 
     outfile = os.path.join (cipher_dir_out, "cipher.h")
-    with codecs.open (outfile, "w", "utf-8") as fw:
+    with open (outfile, "w", encoding="utf-8") as fw:
         fw.write ("#include <grub/crypto.h>\n")
         fw.write ("#include <cipher_wrap.h>\n")
         chlog = "%s	* cipher.h: Likewise.\n" % chlog
 
     outfile = os.path.join (cipher_dir_out, "g10lib.h")
-    with codecs.open (outfile, "w", "utf-8") as fw:
+    with open (outfile, "w", encoding="utf-8") as fw:
         fw.write ("#include <cipher_wrap.h>\n")
         chlog = "%s	* g10lib.h: Likewise.\n" % chlog
 
     conf.close ()
 
-    with codecs.open (os.path.join (cipher_dir_out, "init.c"), "w", "utf-8") as initfile:
+    with open (os.path.join (cipher_dir_out, "init.c"), "w", encoding="utf-8") as initfile:
         initfile.write ("#include <grub/crypto.h>\n")
         for module in modules_sym_md:
             initfile.write ("extern void grub_%s_init (void);\n" % module)
@@ -744,7 +743,7 @@ with codecs.open (os.path.join (cipher_dir_out, "crypto.lst"), "w", "utf-8") as 
 
 
 outfile = os.path.join (cipher_dir_out, "ChangeLog")
-with codecs.open (outfile, "w", "utf-8") as fw:
+with open (outfile, "w", encoding="utf-8") as fw:
     dt = datetime.date.today ()
     fw.write ("%04d-%02d-%02d  Automatic import tool\n" % \
               (dt.year,dt.month, dt.day))

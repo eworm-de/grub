@@ -44,6 +44,7 @@ AC_INIT([GRUB],[2.15],[bug-grub@gnu.org])
 # 6: https://lists.gnu.org/archive/html/grub-devel/2025-11/msg00155.html
 GLOBAL_SBAT_LEVEL=6
 AC_SUBST([GLOBAL_SBAT_LEVEL])
+AC_DEFINE_UNQUOTED([GLOBAL_SBAT_LEVEL], [$GLOBAL_SBAT_LEVEL], [GRUB Global SBAT level])
 
 AC_ARG_WITH([sbat-file],
   AS_HELP_STRING([--with-sbat-file=FILE],

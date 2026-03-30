@@ -9566,6 +9566,39 @@ the generated EFI binary. The CSV file can be stored anywhere on the file system
 grub-mkimage -O x86_64-efi -o grubx64.efi -p '(tftp)/grub' --sbat sbat.csv efinet tftp
 @end example
 
+GRUB also installs a generated @file{sbat.csv} in the platform directory for
+supported targets. This file always contains the upstream @samp{grub} SBAT
+entry using the build-time global SBAT level. If GRUB is configured with
+@option{--with-sbat-file=FILE}, the contents of @var{FILE} are appended to the
+generated @file{sbat.csv}. This lets downstream or vendor builds add their own
+SBAT entries while keeping the upstream @samp{grub} entry consistent with the
+build-time global SBAT level.
+
+When invoking @command{grub-mkimage}, an empty @option{--sbat} argument (for
+example, @samp{--sbat=} or @samp{--sbat ""}) means to use the generated
+platform @file{sbat.csv}. A non-empty @option{--sbat} argument instead selects
+the specified SBAT CSV file. When an SBAT CSV file is supplied,
+@command{grub-mkimage} checks it against the build-time global SBAT level and
+warns if the data is malformed or inconsistent, including a missing or invalid
+@samp{grub} entry or a different @samp{grub} generation. This helps catch
+incorrect SBAT metadata before generating EFI or powerpc-ieee1275 images.
+
+To include downstream SBAT entries in images without passing a separate CSV
+file to @command{grub-mkimage}, provide them at configure time and then use an
+empty @option{--sbat} argument when building the image. For example:
+
+@example
+@group
+../configure --with-sbat-file=/path/to/vendor-sbat.csv ...
+
+grub-mkimage -O x86_64-efi -o grubx64.efi -p '(tftp)/grub' --sbat="" efinet tftp
+@end group
+@end example
+
+In this case, @command{grub-mkimage} embeds the generated platform
+@file{sbat.csv}, which already contains the upstream @samp{grub} entry and the
+additional downstream entries from @option{--with-sbat-file}.
+
 @node Measured Boot
 @section Measuring boot components
 

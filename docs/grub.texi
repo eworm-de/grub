@@ -4194,6 +4194,7 @@ Modules can be loaded via the @command{insmod} (@pxref{insmod}) command.
 * lsefi_module::
 * lsefimmap_module::
 * lsefisystab_module::
+* lsefivar_module::
 * lsmmap_module::
 * lspci_module::
 * lssal_module::
@@ -5260,6 +5261,11 @@ can be used on EFI platforms to display the EFI memory map.
 @section lsefisystab
 This module provides support for the @command{lsefisystab} command. This
 command can be used on EFI platforms to display the EFI system tables.
+
+@node lsefivar_module
+@section lsefivar
+This module provides support for then @command{lsefivar} command. This command
+can be used on EFI platforms to display EFI firmware variables and their content.
 
 @node lsmmap_module
 @section lsmmap
@@ -9072,6 +9078,7 @@ GRUB shell may provide more information on parameters and usage.
 @item @command{lsefi} - Display EFI handles.
 @item @command{lsefimmap} - Display EFI memory map.
 @item @command{lsefisystab} - Display EFI system tables.
+@item @command{lsefivar} - Display EFI firmware variables.
 @item @command{lsmmap} - List memory map provided by firmware.
 @item @command{lspci} - List PCI devices.
 @item @command{lssal} - Display SAL system table.
@@ -10443,7 +10450,7 @@ Information retrieval:
 @itemize
 @item mipsel-loongson: lsspd
 @item mips-arc: lsdev
-@item efi: lsefisystab, lssal, lsefimmap, lsefi
+@item efi: lsefisystab, lssal, lsefimmap, lsefi, lsefivar
 @item i386-pc: lsapm
 @item i386-coreboot: lscoreboot, coreboot_boottime, cbmemc
 @item acpi-enabled (i386-pc, i386-coreboot, i386-multiboot, *-efi): lsacpi

@@ -62,6 +62,7 @@ build:
   artifacts:
     untracked: true
     expire_in: 1 week
+    when: always
   parallel:
     matrix:
       - TARGET: aarch64-linux-gnu

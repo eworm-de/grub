@@ -151,6 +151,30 @@ xgetcwd (void)
   return path;
 }
 
+#ifdef USE_LIBZFS
+static libzfs_handle_t *__libzfs_handle;
+
+static void
+fini_libzfs (void)
+{
+  libzfs_fini (__libzfs_handle);
+}
+
+static libzfs_handle_t *
+grub_get_libzfs_handle (void)
+{
+  if (! __libzfs_handle)
+    {
+      __libzfs_handle = libzfs_init ();
+
+      if (__libzfs_handle)
+	atexit (fini_libzfs);
+    }
+
+  return __libzfs_handle;
+}
+#endif /* USE_LIBZFS */
+
 char **
 grub_util_find_root_devices_from_poolname (char *poolname)
 {

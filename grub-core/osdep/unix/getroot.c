@@ -335,7 +335,10 @@ grub_util_find_root_devices_from_poolname (char *poolname)
     }
 
  out:
-  close (fd);
+  if (fp)
+    fclose (fp);
+  else
+    close (fd);
   waitpid (pid, NULL, 0);
 #endif
   if (devices)
@@ -682,7 +685,10 @@ grub_util_pull_lvm_by_command (const char *os_dev)
     }
 
 out:
-  close (fd);
+  if (vgs)
+    fclose (vgs);
+  else
+    close (fd);
   waitpid (pid, NULL, 0);
   free (buf);
   free (vgid);
